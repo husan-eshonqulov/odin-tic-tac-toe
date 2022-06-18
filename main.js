@@ -1,12 +1,13 @@
 const tds = document.querySelectorAll("td");
 const info = document.querySelector("#extra-info");
 const again = document.querySelector("#again");
-const board = [[], [], []];
+let board = [[], [], []];
 let turn = "X";
 
-tds.forEach((td) => td.addEventListener("click", handleClick));
+tds.forEach((td) => td.addEventListener("click", handleCell));
+again.addEventListener("click", handleAgain);
 
-function handleClick(e) {
+function handleCell(e) {
   if (!e.target.textContent) {
     const key = e.target.dataset.key;
     board[Number(key[0])][Number(key[1])] = turn;
@@ -17,17 +18,28 @@ function handleClick(e) {
     const winner = detWinner(board);
 
     if (winner === "Draw") {
-      tds.forEach((td) => td.removeEventListener("click", handleClick, false));
+      tds.forEach((td) => td.removeEventListener("click", handleCell, false));
       info.textContent = "Winner: Draw";
       again.classList.remove("d-none");
     }
 
     if (winner !== "Pending") {
-      tds.forEach((td) => td.removeEventListener("click", handleClick, false));
+      tds.forEach((td) => td.removeEventListener("click", handleCell, false));
       info.textContent = `Winner: ${winner}`;
       again.classList.remove("d-none");
     }
   }
+}
+
+function handleAgain() {
+  board = [[], [], []];
+  turn = "X";
+  again.classList.add("d-none");
+  info.textContent = "Turn: X Player";
+  tds.forEach((td) => {
+    td.textContent = "";
+    td.addEventListener("click", handleCell);
+  });
 }
 
 function detWinner(board) {
